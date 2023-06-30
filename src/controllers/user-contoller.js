@@ -1,4 +1,4 @@
-import database from "../connectors/databaseConnector.js";
+import database from ".././databaseHandler/databaseConnector.js";
 import currentUser from "../index.js";
 
 
