@@ -45,3 +45,50 @@ export const editCategory = `UPDATE categories
 export const deleteCategory = `DELETE
                                FROM categories
                                WHERE category = ?;`;
+
+export const getAllArticles = `SELECT *
+                               FROM articles;`;
+
+export const getArticleOnTitle = `SELECT *
+                                  FROM articles
+                                  WHERE title = ?;`;
+
+export const getArticlesByUser = `SELECT *
+                                  FROM articles
+                                  WHERE writer = ?;`;   // username of the writer
+
+export const getArticleByUserAndTitle = `SELECT *
+                                         FROM articles
+                                         WHERE writer = ?
+                                           AND title = ?;`;
+
+export const getArticlesOnCategory = `SELECT *
+                                      FROM articles
+                                      WHERE category = ?;`;
+
+export const addArticle = `INSERT INTO articles (title, article_text, writer, category)
+                           VALUES (?, ?, ?, ?);`;
+
+export const updateTitle = `UPDATE articles
+                            SET title = ?
+                            WHERE title = ?;`;  // old title
+
+export const updateArticleText = `UPDATE articles
+                                  SET article_text = ?
+                                  WHERE title = ?;`;
+
+export const updateCategory = `UPDATE articles
+                               SET category = ?
+                               WHERE title = ?;`;
+
+export const updateArticle = `UPDATE articles
+                              SET title        = ?,
+                                  article_text = ?,
+                                  category     = ?
+                              WHERE title = ?;`;    // old title
+
+export const deleteArticleOnTitle = `DELETE
+                                     FROM articles
+                                     WHERE title = ?;`;
+
+
