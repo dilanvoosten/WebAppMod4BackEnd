@@ -32,3 +32,16 @@ export const deleteUser = `DELETE
                            FROM users
                            WHERE username = ?;`;
 
+export const getAllCategories = `SELECT *
+                                 FROM categories;`;
+
+export const addCategory = `INSERT INTO categories (category)
+                            VALUES (?);`;
+
+export const editCategory = `UPDATE categories
+                             SET category = ?
+                             WHERE category = ?;`;  // old category
+
+export const deleteCategory = `DELETE
+                               FROM categories
+                               WHERE category = ?;`;
