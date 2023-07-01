@@ -1,5 +1,8 @@
 // module for making all the queries that are used for the database
 
+/*
+    User queries
+ */
 export const getSpecificUser = `SELECT *
                                 FROM users
                                 WHERE username = ?
@@ -32,6 +35,10 @@ export const deleteUser = `DELETE
                            FROM users
                            WHERE username = ?;`;
 
+/*
+    Category queries
+ */
+
 export const getAllCategories = `SELECT *
                                  FROM categories;`;
 
@@ -46,6 +53,9 @@ export const deleteCategory = `DELETE
                                FROM categories
                                WHERE category = ?;`;
 
+/*
+    Article queries
+ */
 export const getAllArticles = `SELECT *
                                FROM articles;`;
 

@@ -1,5 +1,8 @@
 import Database from "better-sqlite3";
+import * as queries from "./queries.js";
 
+
+// initiate the connection to the database
 let database;
 try {
     database = new Database('../database/wa_database.sqlite');
@@ -35,5 +38,49 @@ database.prepare(`CREATE TABLE IF NOT EXISTS categories
                       category TEXT PRIMARY KEY,
                       CONSTRAINT unique_cat UNIQUE (category)
                   );`).run();
+
+/*
+    Functions of the User
+ */
+export function getSpecificUser(username, password) {
+    return database.prepare(queries.getSpecificUser).get(username, password);
+}
+
+export function getAllUsers() {
+    return database.prepare(queries.getAllUsers).all();
+}
+
+export function getUserOnUsername(username) {
+    return database.prepare(queries.getUserOnUsername).get(username);
+}
+
+export function createUser(username, password, role) {
+    database.prepare(queries.addNewUser).run(username, password, role);
+}
+
+
+export function updateUsername(newUsername, oldUsername) {
+    database.prepare(queries.updateUsername).run(newUsername, oldUsername);
+}
+
+export function updatePassword(username, newPassword) {
+    database.prepare(queries.updatePassword).run()
+}
+
+export function updateUsernameAndPassword(newUsername, newPassword, oldUsername) {
+    database.prepare(queries.updateUsernameAndPassword).run(newUsername, newPassword, oldUsername);
+}
+
+export function deleteUser(username) {
+    database.prepare(queries.deleteUser).run(username);
+}
+
+/*
+    Functions of a Category
+ */
+
+/*
+    Functions of an Article
+ */
 
 export default database;
