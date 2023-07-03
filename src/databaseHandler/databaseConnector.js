@@ -78,6 +78,21 @@ export function deleteUser(username) {
 /*
     Functions of a Category
  */
+export function getAllCategories() {
+    return database.prepare(queries.getAllCategories).all();
+}
+
+export function createCategory(category) {
+    database.prepare(queries.addCategory).run(category);
+}
+
+export function updateCategory(newCategory, oldCategory) {
+    database.prepare(queries.editCategory).run(newCategory, oldCategory);
+}
+
+export function deleteCategory(category) {
+    database.prepare(queries.deleteCategory).run(category);
+}
 
 /*
     Functions of an Article
