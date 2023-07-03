@@ -17,7 +17,7 @@ router.get('/users/current', userC.getCurrentUser);
 router.post('/users', nhf.threeParam, userC.createNewUser);
 
 // put call to change a users credentials
-router.post('/users/update', nhf.threeParam, userC.updateUserCredentials);
+router.put('/users/:username', nhf.threeParam, userC.updateUserCredentials);
 
 //  delete call to delete a user
 router.delete('/delete/user/:username', userC.deleteUser);

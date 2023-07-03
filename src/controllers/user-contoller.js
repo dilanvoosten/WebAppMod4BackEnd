@@ -1,100 +1,94 @@
-import database from ".././databaseHandler/databaseConnector.js";
+import * as  database from ".././databaseHandler/databaseConnector.js";
 import currentUser from "../index.js";
 
 
-export function getAllUsers(req, res) {
-    res.status(200).json(database.prepare('SELECT * FROM users;').all());
+export async function getAllUsers(req, res) {
+    // call the get all users function
+    const users = await database.getAllUsers();
+    return res.status(200).json(users);
 }
 
-export function getUserOnUsername(req, res) {
-    const row = database.prepare(`SELECT *
-                                  FROM users
-                                  WHERE username = ?;`).get(req.params.username);
-    if (row) {
-        res.status(200).json(row);
+export async function getUserOnUsername(req, res) {
+    // call the get user on username function
+    const user = await database.getUserOnUsername(req.params.username);
+    if (!user) {
+        // send error message if user does not exist
+        return res.status(404).send(`User with this username: ${req.params.username} does not exist`);
     } else {
-        res.status(404).send(`User with this username: ${req.params.username} does not exist`);
+        return res.status(200).json(user);
     }
 }
 
 export function getCurrentUser(req, res) {
-    res.status(200).json(currentUser);
+// TODO: get current user in session
 }
 
 
-export function createNewUser(req, res) {
-    // check if user already exists, if not create new one
-    const userRow = database.prepare(`SELECT *
-                                      FROM users
-                                      WHERE username = ?`).get(req.body.username);
-    if (!userRow) {
-        try {
-            database.prepare(`INSERT INTO users (username, password, role)
-                              VALUES (?, ?, ?);`).run(
-                req.body.username,
-                req.body.password,
-                req.body.role
-            );
-            res.status(201).redirect('/home');
-        } catch (e) {
-            res.send(`Error with creating new user: ${e}`);
-        }
+export async function createNewUser(req, res) {
+    // format body into constants
+    const {username, password, role} = req.body;
+
+    // check if user already exists
+    const user = await database.getUserOnUsername(username);
+    if (user) {
+        res.status(403).send(`User with this username already exist!`);
     } else {
-        res.status(401).send(`User with this username already exists!`);
+        // try to add user to database and redirect to homepage
+        try {
+            await database.createUser(username, password, role);
+            return res.status(200).redirect('/home');
+        } catch (e) {
+            return res.status(400).send(`Error with creating new user: ${e}`)
+        }
     }
 }
 
 
-export function updateUserCredentials(req, res) {
-    // check for maybe not send anything
-    if (req.body.updateUsername !== "" || req.body.confirmPassword !== "") {
-        // update the username if different username is given
-        if (req.body.updateUsername !== "") {
+export async function updateUserCredentials(req, res) {
+    // format body into constants
+    const {username, password} = req.body;
 
-            const usernameRow = database.prepare(`UPDATE users
-                                                  SET username = ?
-                                                  WHERE username = ?;`).run(
-                req.body.updateUsername,
-                currentUser.username);
-            // check if user is in the system
-            if (usernameRow) {
-                res.status(200).send('Username updated!');
+    // check if the user actually exists
+    const user = await database.getUserOnUsername(req.params.username);
+    if (!user) {
+        return res.status(404).send(`User with this username: ${req.params.username} does not exist`);
+    } else {
+        // check which credentials to change and do accordingly
+        try {
+            if (username === undefined) {
+                // change password only
+                await database.updatePassword(password, req.params.username);
+                return res.status(200).send('Password changed!');
+            } else if (password === undefined) {
+                // change username only
+                await database.updateUsername(username, req.params.username);
+                return res.status(200).send('Username changed!');
             } else {
-                res.status(404).send(`Username not found in the system!`);
+                // change both username and password
+                await database.updateUsernameAndPassword(username, password, req.params.username);
+                return res.status(200).send('Username and Password changed!');
             }
+        } catch (err) {
+            return res.status(400).send(`Error with changing credentials: ${err}`)
         }
-        // update the password if new password is given
-        if (req.body.confirmPassword !== "") {
-            database.prepare(`UPDATE users
-                              SET password = ?
-                              WHERE username = ?;`).run(req.body.updateUsername,
-                currentUser.username);
-            res.status(200).send(`Password updated!`);
-        }
-    } else {
-        res.status(400).send("No updates for username or password were given!");
     }
 }
 
-export function deleteUser(req, res) {
-    const row = database.prepare(`SELECT *
-                                  FROM users
-                                  WHERE username = ?`).get(req.params.username);
-    // check if user is in the system
-    if (row) {
+export async function deleteUser(req, res) {
+    // check if username exist
+    const user = await database.getUserOnUsername(req.params.username);
+    if (!user) {
+        // send error message if user does not exist
+        return res.status(404).send(`User with this username: ${req.params.username} does not exist`);
+    } else {
         try {
-            database.prepare(`DELETE
-                              FROM users
-                              WHERE username = ${req.params.username};`).run();
-            res.status(204).send('User has been deleted');
-        } catch (e) {
-            res.send(`Error with deleting user: ${e}`);
+            await database.deleteUser(req.params.username);
+            return res.status(204).send('User successfully deleted!');
+        } catch (err) {
+            return res.send('Error while deleting user', err);
         }
-    } else {
-        res.status(404).send('The user you want to delete is not found');
     }
 }
 
 
-// TODO: Place them to corresponding entity
 

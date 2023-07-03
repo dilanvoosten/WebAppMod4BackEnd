@@ -42,10 +42,6 @@ database.prepare(`CREATE TABLE IF NOT EXISTS categories
 /*
     Functions of the User
  */
-export function getSpecificUser(username, password) {
-    return database.prepare(queries.getSpecificUser).get(username, password);
-}
-
 export function getAllUsers() {
     return database.prepare(queries.getAllUsers).all();
 }
@@ -63,8 +59,8 @@ export function updateUsername(newUsername, oldUsername) {
     database.prepare(queries.updateUsername).run(newUsername, oldUsername);
 }
 
-export function updatePassword(username, newPassword) {
-    database.prepare(queries.updatePassword).run()
+export function updatePassword(newPassword, username) {
+    database.prepare(queries.updatePassword).run(newPassword, username)
 }
 
 export function updateUsernameAndPassword(newUsername, newPassword, oldUsername) {
