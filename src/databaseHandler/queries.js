@@ -87,9 +87,9 @@ export const updateArticleText = `UPDATE articles
                                   SET article_text = ?
                                   WHERE title = ?;`;
 
-export const updateCategory = `UPDATE articles
-                               SET category = ?
-                               WHERE title = ?;`;
+export const updateArticleCategory = `UPDATE articles
+                                      SET category = ?
+                                      WHERE title = ?;`;
 
 export const updateArticle = `UPDATE articles
                               SET title        = ?,
@@ -100,5 +100,9 @@ export const updateArticle = `UPDATE articles
 export const deleteArticleOnTitle = `DELETE
                                      FROM articles
                                      WHERE title = ?;`;
+
+export const deleteArticlesByUser = `DELETE
+                                     FROM articles
+                                     WHERE writer = ?;`;
 
 

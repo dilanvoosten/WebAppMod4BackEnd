@@ -3,7 +3,7 @@ import * as queries from "./queries.js";
 
 
 // initiate the connection to the database
-let database;
+export let database;
 try {
     database = new Database('../database/wa_database.sqlite');
 } catch (e) {
@@ -98,4 +98,53 @@ export function deleteCategory(category) {
     Functions of an Article
  */
 
-export default database;
+export function getAllArticles() {
+    return database.prepare(queries.getAllArticles).all();
+}
+
+export function getArticleOnTitle(title) {
+    return database.prepare(queries.getArticleOnTitle).get(title);
+}
+
+export function getArticlesByUser(username) {
+    return database.prepare(queries.getArticlesByUser).all(username);
+}
+
+export function getArticleByUserAndTitle(username, title) {
+    return database.prepare(queries.getArticleByUserAndTitle).get(username, title);
+}
+
+export function getArticlesOnCategory(category) {
+    return database.prepare(queries.getArticlesOnCategory).all(category);
+}
+
+export function createArticle(title, articleText, username, category) {
+    database.prepare(queries.addArticle).run(title, articleText, username, category);
+}
+
+export function updateTitle(newTitle, oldTitle) {
+    database.prepare(queries.updateTitle).run(newTitle, oldTitle);
+}
+
+export function updateArticleText(newArticleText, title) {
+    database.prepare(queries.updateArticleText).run(newArticleText, title);
+}
+
+export function updateArticleCategory(newCategory, title) {
+    database.prepare(queries.updateArticleCategory).run(newCategory, title);
+}
+
+export function updateArticle(newTitle, newArticleText, newCategory, oldTitle) {
+    database.prepare(queries.updateArticle).run(newTitle, newArticleText, newCategory, oldTitle);
+}
+
+export function deleteArticleOnTitle(title) {
+    database.prepare(queries.deleteArticleOnTitle).run(title);
+
+}
+
+export function deleteArticlesByUser(username) {
+    database.prepare(queries.deleteArticlesByUser).run(username);
+}
+
+// export default database;
