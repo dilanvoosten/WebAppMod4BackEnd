@@ -11,16 +11,16 @@ router.get('/users', userC.getAllUsers);
 router.get('/users/:username', userC.getUserOnUsername);
 
 // get call to retrieve current user
-router.get('/users/current', userC.getCurrentUser);
+router.get('/current/user', userC.getCurrentUser);
 
 // post call to create new user
-router.post('/users', nhf.threeParam, userC.createNewUser);
+router.post('/users', userC.createNewUser);
 
 // put call to change a users credentials
 router.put('/users/:username', nhf.threeParam, userC.updateUserCredentials);
 
 //  delete call to delete a user
-router.delete('/delete/user/:username', userC.deleteUser);
+router.delete('users/:username', userC.deleteUser);
 
 // exports
 export default router;

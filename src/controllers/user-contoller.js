@@ -19,8 +19,9 @@ export async function getUserOnUsername(req, res) {
     }
 }
 
-export function getCurrentUser(req, res) {
+export async function getCurrentUser(req, res) {
 // TODO: get current user in session
+    return res.send('current user');
 }
 
 
@@ -31,14 +32,14 @@ export async function createNewUser(req, res) {
     // check if user already exists
     const user = await database.getUserOnUsername(username);
     if (user) {
-        res.status(403).send(`User with this username already exist!`);
+        res.status(403).json(`User with this username already exist!`);
     } else {
         // try to add user to database and redirect to homepage
         try {
             await database.createUser(username, password, role);
             return res.status(200).redirect('/home');
         } catch (e) {
-            return res.status(400).send(`Error with creating new user: ${e}`)
+            return res.status(400).json(`Error with creating new user: ${e}`)
         }
     }
 }
