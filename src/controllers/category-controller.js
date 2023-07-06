@@ -1,4 +1,4 @@
-import database from ".././databaseHandler/databaseConnector.js";
+import * as database from ".././databaseHandler/databaseConnector.js";
 
 export function getAllCategories(req, res) {
     res.status(200).json(database.prepare(`SELECT *

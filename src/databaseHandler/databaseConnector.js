@@ -6,6 +6,7 @@ import * as queries from "./queries.js";
 export let database;
 try {
     database = new Database('../database/wa_database.sqlite');
+    console.log(`Database connected!`)
 } catch (e) {
     console.error('Error while initializing database!', e);
     throw e;
@@ -76,6 +77,10 @@ export function deleteUser(username) {
  */
 export function getAllCategories() {
     return database.prepare(queries.getAllCategories).all();
+}
+
+export function getSpecificCategory(category) {
+    return database.prepare(queries.getSpecificCategory).get(category);
 }
 
 export function createCategory(category) {

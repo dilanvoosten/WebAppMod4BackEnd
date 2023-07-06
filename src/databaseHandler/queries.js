@@ -42,6 +42,10 @@ export const deleteUser = `DELETE
 export const getAllCategories = `SELECT *
                                  FROM categories;`;
 
+export const getSpecificCategory = `SELECT *
+                                    FROM categories
+                                    WHERE category = ?;`;
+
 export const addCategory = `INSERT INTO categories (category)
                             VALUES (?);`;
 

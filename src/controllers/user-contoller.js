@@ -85,7 +85,7 @@ export async function deleteUser(req, res) {
             await database.deleteUser(req.params.username);
             return res.status(204).send('User successfully deleted!');
         } catch (err) {
-            return res.send('Error while deleting user', err);
+            return res.status(400).send('Error while deleting user', err);
         }
     }
 }

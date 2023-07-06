@@ -3,7 +3,7 @@ import userRouter from "./routers/user-router.js";
 import articleRouter from "./routers/article-router.js";
 import categoryRouter from "./routers/category-router.js";
 import cors from "cors";
-import database from "././databaseHandler/databaseConnector.js";
+import * as database from "././databaseHandler/databaseConnector.js";
 import * as nhf from './nextHandlerFunctions.js';
 
 const app = express();

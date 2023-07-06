@@ -1,137 +1,119 @@
-import database from ".././databaseHandler/databaseConnector.js";
+import * as database from ".././databaseHandler/databaseConnector.js";
 import currentUser from "../index.js";
 
 // get a list of all articles
-export function getAllArticles(req, res) {
-    res.status(200).json(database.prepare(`SELECT *
-                                           FROM articles`).all());
+export async function getAllArticles(req, res) {
+    // call to get all articles function
+    const articles = await database.getAllArticles();
+    return res.status(200).json(articles);
 }
 
 // get an article on title
-export function getArticleOnTitle(req, res) {
-    const row = database.prepare(`SELECT *
-                                  FROM articles
-                                  WHERE title = ?;`).get(req.params.title);
-    // check if there is an article with given title
-    if (row) {
-        res.status(200).json(row);
+export async function getArticleOnTitle(req, res) {
+    // call to get article on title function
+    const article = await database.getArticleOnTitle(req.params.title);
+    if (!article) {
+        // send error message if there is no article
+        return res.status(404).send(`No article found with title: ${req.params.title}`);
     } else {
-        res.status(404).send('No article found with given title');
+        return res.status(200).json(article);
     }
 }
 
 // get a list of articles by user
-export function getArticlesByUser(req, res) {
-    const row = database.prepare(`SELECT *
-                                  FROM users
-                                  WHERE username = ?;`).get(req.params.username);
-    // check user exists
-    if (row) {
-        res.status(200).json(database.prepare(`SELECT *
-                                               FROM articles
-                                               WHERE writer = ${req.params.username};`).all());
+export async function getArticlesByUser(req, res) {
+    const user = await database.getUserOnUsername(req.params.username);
+    // check if user exists
+    if (!user) {
+        return res.status(404).send(`There is no user with username ${req.params.username}`);
     } else {
-        res.status(404).send('User not found');
+        const articles = await database.getArticlesByUser(req.params.username);
+        // check if articles are there
+        if (!articles) {
+            return res.status(404).send(`There are no articles written by ${req.params.username}`);
+        } else {
+            return res.status(200).json(articles);
+        }
     }
 }
 
-export function getArticleByUserAndTitle(req, res) {
-    const user = database.prepare(`SELECT *
-                                   FROM users
-                                   WHERE username = ?;`).get(req.params.username);
-
-    // check if given user exists
-    if (user) {
-        const title = database.prepare(`SELECT *
-                                        FROM articles
-                                        WHERE title = ?;`).get(req.params.title);
-
-        // check if article exists
-        if (title) {
-            res.status(200).json(database.prepare(`SELECT *
-                                                   FROM articles
-                                                   WHERE title = ?
-                                                     AND writer = ?`).get(
-                    req.params.title,
-                    req.params.username
-                )
-            );
-        } else {
-            res.status(404).send('Article not found');
-        }
+export async function getArticleByUserAndTitle(req, res) {
+    // check if given user exist
+    const user = await database.getUserOnUsername(req.params.username);
+    if (!user) {
+        return res.status(404).send(`There is no user with username ${req.params.username}`);
     } else {
-        res.status(404).send('User not found');
+        // check if the article on title exist
+        const article = await database.getArticleByUserAndTitle(req.params.username, req.params.title);
+        if (!article) {
+            return res.status(404).send(`There is no article with title ${req.params.title} written by ${req.params.username}`);
+        } else {
+            return res.status(200).json(article);
+        }
     }
 }
 
 // get all articles on category
-export function getArticlesOnCategory(req, res) {
-    const cat = database.prepare(`SELECT *
-                                  FROM categories
-                                  WHERE category = ?;`).get(req.params.category);
-
+export async function getArticlesOnCategory(req, res) {
     // check if category exist
-    if (cat) {
-        const article = database.prepare(`SELECT *
-                                          FROM articles
-                                          WHERE category = ?;`).get(req.params.category);
-        // check if there is any article with this category
-        if (article) {
-            res.status(200).json(article);
-        } else {
-            res.status(404).send('There is no article with this category');
-        }
+    const category = await database.getSpecificCategory(req.params.category);
+    if (!category) {
+        return res.status(404).send(`The given category ${req.params.category} does not exist`);
     } else {
-        res.status(404).send('This category does not exist');
+        // check if articles are there
+        const articles = await database.getArticlesOnCategory(req.params.category);
+        if (!articles) {
+            return res.status(404).send(`There are no articles with the ${req.params.category}`);
+        } else {
+            return res.status(200).json(articles);
+        }
     }
 }
 
 
 // create new article by user
-export function createNewArticle(req, res) {
-    try {
-        // modify data so that it will be in the correct format:
-        // title, article_text in list (with header and section), writer, category
-        const formData = req.body;
-        // put article_text in a list
-        formData.articleText = '{ "text" : "' + formData.articleText + '", "header" : "' + formData.articleHeader + '", "section" : "' + formData.articleSection + '" }';
-        // formData.articleText = 'Test article text';
-        formData.writer = currentUser.username;
-
-        req.body = formData;
-
-        // check if article already exists, if not create new one
-        const row = database.prepare(`SELECT *
-                                      FROM articles
-                                      WHERE title = ?;`).get(req.body.articleTitle);
-        if (!row) {
-            // check if category already exists, if not create a new one
-            const categoryRow = database.prepare(`SELECT *
-                                                  FROM categories
-                                                  WHERE category = ?;`).get(req.body.category);
-            if (!categoryRow) {
-                database.prepare(`INSERT INTO categories(category)
-                                  VALUES (?);`).run(req.body.category);
-            }
-
-            // add new article to table
-            database.prepare(`INSERT INTO articles(title, article_text, writer, category)
-                              VALUES (?, ?, ?, ?);`).run(
-                req.body.articleTitle,
-                req.body.articleText,
-                req.body.writer,
-                req.body.category
-            );
-            res.status(200).send('New article created');
-        } else {
-            res.status(403).send(`Article with this title already exists!`);
-        }
-    } catch (e) {
-        res.status(400).send(`Error while creating new article: ${e}`);
+export async function createNewArticle(req, res) {
+    // modify data so that it will be in the correct format:
+    // title, article_text in list (with header and section), writer, category
+    const {title, articleText, header, section, writer, category} = req.body;
+    // create article_text with
+    const formatted_text = {
+        "text": articleText,
+        "header": header,
+        "section": section
     }
+
+    // check if title already exist
+    const article = await database.getArticleOnTitle(title);
+    if (article) {
+        res.status(403).send(`Article with title ${title} already exist`);
+    } else {
+        // check if category already exist, if not create new one
+        const checkCat = await database.getSpecificCategory(category);
+        if (!checkCat) {
+            // create new category
+            try {
+                await database.createCategory(category);
+            } catch (err) {
+                return res.status(400).send('Error with creating new category', err);
+            }
+        } else {
+            // create new article
+            try {
+                await database.createArticle(title, formatted_text, writer, category);
+                return res.status(200).send('New article created');
+            } catch (e) {
+                res.status(400).send(`Error while creating new article: ${e}`);
+            }
+        }
+    }
+
+
 }
 
-export function editArticle(req, res) {
+
+// TODO: think about how to edit article the easiest
+export async function editArticle(req, res) {
     try {
         // modify data so that it will be in the correct format:
         // title, article_text in list (with header and section), writer, category
@@ -166,42 +148,62 @@ export function editArticle(req, res) {
     } catch (e) {
         res.status(400).send(`Error while updating article: ${e}`);
     }
-}
 
-export function deleteOnUsername(req, res) {
-    const user = database.prepare(`SELECT *
-                                   FROM users
-                                   WHERE username = ?;`).get(req.params.username);
-    // check if user exist
-    if (user) {
-        const article = database.prepare(`SELECT *
-                                          FROM articles
-                                          WHERE writer = ?;`).get(req.params.username);
-        // check if user made any articles
-        if (article) {
-            database.prepare(`DELETE
-                              FROM articles
-                              WHERE writer = ?;`).run(req.params.username);
-            res.status(204).send('Deleted all articles from user');
-        } else {
-            res.status(404).send('No articles found');
-        }
+    // modify data so that it will be in the correct format:
+    // title, article_text in list (with header and section), writer, category
+    const {title, articleText, header, section, writer, category} = req.body;
+    // create article_text as formatted
+    const formatted_text = {
+        "text": articleText,
+        "header": header,
+        "section": section
+    }
+
+    // check if article even exist
+    const article = await database.getArticleOnTitle(title);
+    if (!article) {
+        return res.status(404).send(`Article with this title ${title} does not exist`);
     } else {
-        res.status(404).send('User not found');
+        // check which parts to change and do accordingly
+        try {
+            if (title !== undefined) {
+                // update title
+
+            }
+        } catch (err) {
+            return res.status(400).send('Error with changing article', err);
+        }
     }
 }
 
-export function deleteOnTitle(req, res) {
-    const row = database.prepare(`SELECT *
-                                  FROM articles
-                                  WHERE title = ?;`).get(req.params.title);
-    // check if article exist
-    if (row) {
-        database.prepare(`DELETE
-                          FROM articles
-                          WHERE title = ?;`).run(req.params.title);
-        res.status(204).send('Article deleted');
+export async function deleteOnUsername(req, res) {
+    // check if user even exist
+    const user = await database.getUserOnUsername(req.params.username);
+    if (!user) {
+        return res.status(404).send(`The user with username ${req.params.username} does not exist`);
     } else {
-        res.send(404).send('Article not found');
+        // delete articles by user
+        try {
+            await database.deleteArticlesByUser(req.params.username);
+            return res.status(204).send('Articles successfully deleted');
+        } catch (err) {
+            return res.status(400).send('Error while deleting articles', err);
+        }
+    }
+}
+
+export async function deleteOnTitle(req, res) {
+    // check if article exist
+    const article = await database.getArticleOnTitle(req.params.title);
+    if (!article) {
+        return res.status(404).send(`Article with title ${req.params.title} does not exist`);
+    } else {
+        // delete article on title
+        try {
+            await database.deleteArticleOnTitle(req.params.title);
+            return res.status(204).send(`Article successfully deleted`)
+        } catch (err) {
+            return res.status(400).send('Error while deleting article', err);
+        }
     }
 }
