@@ -1,61 +1,69 @@
 import * as database from ".././databaseHandler/databaseConnector.js";
 
-export function getAllCategories(req, res) {
-    res.status(200).json(database.prepare(`SELECT *
-                                           FROM categories;`).all()
-    );
+export async function getAllCategories(req, res) {
+    // call to get all categories function
+    const categories = await database.getAllCategories();
+    return res.status(200).json(categories);
 }
 
-export function createCategory(req, res) {
-    // check if category already exist, if not create new one
-    const row = database.prepare(`SELECT *
-                                  FROM categories
-                                  WHERE category = ?;`).get(req.body.category);
-    if (row) {
-        res.status(403).send('Category already exist');
+export async function getSpecificCategory(req, res) {
+    // call to get category on category name function
+    const category = await database.getSpecificCategory(req.params.category);
+    if (!category) {
+        // send error message if there is no article
+        return res.status(404).send(`No category found with name ${req.params.category}`);
     } else {
+        return res.status(200).json(category);
+    }
+}
+
+export async function createCategory(req, res) {
+    // format body into constant
+    const category = req.body;
+    // check if category exist
+    const checkCat = await database.getSpecificCategory(category);
+    if (checkCat) {
+        return res.status(403).send(`This category already exist`);
+    } else {
+        // add category to database
         try {
-            database.prepare(`INSERT INTO categories (category)
-                              VALUES (?);`).run(req.body.category);
-            res.status(201).send('New category created');
-        } catch (e) {
-            res.status(400).send('Error while creating category', e);
+            await database.createCategory(category);
+            return res.status(200).send('Category successfully created');
+        } catch (err) {
+            return res.status(400).send('Error while creating category', err);
         }
     }
 }
 
-export function editCategory(req, res) {
-    // check if category exist, if so, edit it
-    const row = database.prepare(`SELECT *
-                                  FROM categories
-                                  WHERE categorie = ?;`).get(req.params.category);
-    if (row) {
+export async function editCategory(req, res) {
+    const newCategory = req.body;
+    // check if category exist
+    const category = await database.getSpecificCategory(req.params.category);
+    if (!category) {
+        return res.status(404).send(`Given category ${category} does not exist`);
+    } else {
+        // update category
         try {
-            database.prepare(`UPDATE categories
-                              SET category = ?
-                              WHERE category = ?`).run(
-                req.body.category,
-                req.params.category
-            );
-            res.status(200).send('Category has been edited');
-        } catch (e) {
-            res.status(400).send(`Error while editing category`, e);
+            await database.updateCategory(newCategory, category);
+            return res.status(200).send("Category updated");
+        } catch (err) {
+            return res.status(400).send('Error with changing category', err);
         }
     }
-    res.status(404).send('Category not found');
 }
 
-export function deleteCategory(req, res) {
-    // check if category exist, if so remove it
-    const row = database.prepare(`SELECT *
-                                  FROM categories
-                                  WHERE category = ?;`).get(req.params.category);
-    if (row) {
-        database.prepare(`DELETE
-                          FROM categories
-                          WHERE category = ?;`).run(req.params.category);
-        res.status(204).send('Category has been deleted');
+export async function deleteCategory(req, res) {
+    // check if category exist
+    const category = database.getSpecificCategory(req.params.category);
+    if (!category) {
+        return res.status(404).send(`Category ${req.params.category} does not exist`);
     } else {
-        res.status(404).send('Category not found');
+        try {
+            await database.deleteCategory(req.params.category);
+            return res.status(204).send('Category successfully');
+        } catch (err) {
+            return res.status(400).send('Error while deleting user', err);
+        }
     }
+
 }

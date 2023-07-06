@@ -7,6 +7,9 @@ import * as nhf from '../nextHandlerFunctions.js'
 // get call to retrieve all categories
 router.get('/categories', categoryC.getAllCategories);
 
+// get call to retrieve specific category
+router.get('/categories/:category', categoryC.getSpecificCategory);
+
 // post call to create new category
 router.post('/categories', nhf.oneParam, categoryC.createCategory);
 
