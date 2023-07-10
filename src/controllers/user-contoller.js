@@ -13,7 +13,7 @@ export async function getUserOnUsername(req, res) {
     const user = await database.getUserOnUsername(req.params.username);
     if (!user) {
         // send error message if user does not exist
-        return res.status(404).send(`User with this username: ${req.params.username} does not exist`);
+        return res.status(404).json(`User with this username: ${req.params.username} does not exist`);
     } else {
         return res.status(200).json(user);
     }
@@ -21,7 +21,7 @@ export async function getUserOnUsername(req, res) {
 
 export async function getCurrentUser(req, res) {
 // TODO: get current user in session
-    return res.send('current user');
+    return res.json('current user');
 }
 
 
@@ -52,25 +52,25 @@ export async function updateUserCredentials(req, res) {
     // check if the user actually exists
     const user = await database.getUserOnUsername(req.params.username);
     if (!user) {
-        return res.status(404).send(`User with this username: ${req.params.username} does not exist`);
+        return res.status(404).json(`User with this username: ${req.params.username} does not exist`);
     } else {
         // check which credentials to change and do accordingly
         try {
             if (username === undefined) {
                 // change password only
                 await database.updatePassword(password, req.params.username);
-                return res.status(200).send('Password changed!');
+                return res.status(200).json('Password changed!');
             } else if (password === undefined) {
                 // change username only
                 await database.updateUsername(username, req.params.username);
-                return res.status(200).send('Username changed!');
+                return res.status(200).json('Username changed!');
             } else {
                 // change both username and password
                 await database.updateUsernameAndPassword(username, password, req.params.username);
-                return res.status(200).send('Username and Password changed!');
+                return res.status(200).json('Username and Password changed!');
             }
         } catch (err) {
-            return res.status(400).send(`Error with changing credentials: ${err}`)
+            return res.status(400).json(`Error with changing credentials: ${err}`)
         }
     }
 }
@@ -80,13 +80,13 @@ export async function deleteUser(req, res) {
     const user = await database.getUserOnUsername(req.params.username);
     if (!user) {
         // send error message if user does not exist
-        return res.status(404).send(`User with this username: ${req.params.username} does not exist`);
+        return res.status(404).json(`User with this username: ${req.params.username} does not exist`);
     } else {
         try {
             await database.deleteUser(req.params.username);
-            return res.status(204).send('User successfully deleted!');
+            return res.status(204).json('User successfully deleted!');
         } catch (err) {
-            return res.status(400).send('Error while deleting user', err);
+            return res.status(400).json('Error while deleting user', err);
         }
     }
 }
