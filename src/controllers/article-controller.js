@@ -75,18 +75,12 @@ export async function getArticlesOnCategory(req, res) {
 export async function createNewArticle(req, res) {
     // modify data so that it will be in the correct format:
     // title, article_text in list (with header and section), writer, category
-    const {title, articleText, header, section, writer, category} = req.body;
-    // create article_text with
-    const formatted_text = {
-        "text": articleText,
-        "header": header,
-        "section": section
-    }
+    const {articleTitle, articleText, writer, category} = req.body;
 
     // check if title already exist
-    const article = await database.getArticleOnTitle(title);
+    const article = await database.getArticleOnTitle(articleTitle);
     if (article) {
-        res.status(403).json(`Article with title ${title} already exist`);
+        res.status(403).json(`Article with title ${articleTitle} already exist`);
     } else {
         // check if category already exist, if not create new one
         const checkCat = await database.getSpecificCategory(category);
@@ -100,15 +94,13 @@ export async function createNewArticle(req, res) {
         } else {
             // create new article
             try {
-                await database.createArticle(title, formatted_text, writer, category);
+                await database.createArticle(articleTitle, articleText, category, writer);
                 return res.status(200).json('New article created');
             } catch (e) {
                 res.status(400).json(`Error while creating new article: ${e}`);
             }
         }
     }
-
-
 }
 
 

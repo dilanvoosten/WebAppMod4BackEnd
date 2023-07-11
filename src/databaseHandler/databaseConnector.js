@@ -119,7 +119,13 @@ export function getArticlesOnCategory(category) {
     return database.prepare(queries.getArticlesOnCategory).all(category);
 }
 
-export function createArticle(title, articleText, username, category) {
+export function createArticle(title, articleText, category, username) {
+    console.log('Checking parameters send to db query:')
+    console.log(title);
+    console.log(articleText);
+    console.log(category);
+    console.log(username);
+
     database.prepare(queries.addArticle).run(title, articleText, username, category);
 }
 

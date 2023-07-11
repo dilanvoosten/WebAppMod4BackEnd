@@ -20,7 +20,7 @@ router.get('/users/:username/:title', articleC.getArticleByUserAndTitle);
 router.get('/articles/categories/:category', articleC.getArticlesOnCategory);
 
 // post call to create new article/
-router.post('/articles', nhf.sixParam, articleC.createNewArticle);
+router.post('/articles', articleC.createNewArticle);
 
 // put call to update article
 router.put('/articles/:title', nhf.sixParam, articleC.editArticle);

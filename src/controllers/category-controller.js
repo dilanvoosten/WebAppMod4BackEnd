@@ -62,7 +62,7 @@ export async function deleteCategory(req, res) {
             await database.deleteCategory(req.params.category);
             return res.status(204).json('Category successfully');
         } catch (err) {
-            return res.status(400).json('Error while deleting user', err);
+            return res.status(400).json(err);
         }
     }
 
