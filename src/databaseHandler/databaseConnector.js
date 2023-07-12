@@ -51,6 +51,10 @@ export function getUserOnUsername(username) {
     return database.prepare(queries.getUserOnUsername).get(username);
 }
 
+export function getSpecificUser(username, password) {
+    return database.prepare(queries.getSpecificUser).get(username, password);
+}
+
 export function createUser(username, password, role) {
     database.prepare(queries.addNewUser).run(username, password, role);
 }

@@ -11,10 +11,10 @@ router.get('/articles', articleC.getAllArticles);
 router.get('/articles/:title', articleC.getArticleOnTitle);
 
 // get call to retrieve all articles by user
-router.get('/articles/writers/:username', articleC.getArticlesByUser);
+router.get('/users/:username/articles', articleC.getArticlesByUser);
 
 // get call to retrieve specific article by a user
-router.get('/users/:username/:title', articleC.getArticleByUserAndTitle);
+router.get('/users/:username/articles/:title', articleC.getArticleByUserAndTitle);
 
 // get call to retrieve all articles of a category
 router.get('/articles/categories/:category', articleC.getArticlesOnCategory);
@@ -23,10 +23,10 @@ router.get('/articles/categories/:category', articleC.getArticlesOnCategory);
 router.post('/articles', articleC.createNewArticle);
 
 // put call to update article
-router.put('/articles/:title', nhf.sixParam, articleC.editArticle);
+router.put('/articles/:title', articleC.editArticle);
 
 // delete call to delete all articles from user
-router.delete('/articles/:username', articleC.deleteOnUsername);
+router.delete('/users/:username/articles', articleC.deleteOnUsername);
 
 // delete call to delete an article on title
 router.delete('/articles/:title', articleC.deleteOnTitle);

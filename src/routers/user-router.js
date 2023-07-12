@@ -10,8 +10,8 @@ router.get('/users', userC.getAllUsers);
 // get call to retrieve user on username
 router.get('/users/:username', userC.getUserOnUsername);
 
-// get call to retrieve current user
-router.get('/current/user', userC.getCurrentUser);
+// post call to check user credentials
+router.post('/current', userC.getCurrentUser);
 
 // post call to create new user
 router.post('/users', userC.createNewUser);

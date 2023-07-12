@@ -1,5 +1,5 @@
 import * as database from ".././databaseHandler/databaseConnector.js";
-import currentUser from "../index.js";
+// import currentUser from "../index.js";
 
 // get a list of all articles
 export async function getAllArticles(req, res) {

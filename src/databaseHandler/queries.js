@@ -15,6 +15,7 @@ export const getUserOnUsername = `SELECT *
                                   FROM users
                                   WHERE username = ?;`;
 
+
 export const addNewUser = `INSERT INTO users (username, password, role)
                            VALUES (?, ?, ?);`;
 
