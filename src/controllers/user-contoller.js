@@ -17,22 +17,6 @@ export async function getUserOnUsername(req, res) {
     }
 }
 
-
-export async function getCurrentUser(req, res) {
-    // format body into constants
-    const {username, password} = req.body;
-
-    // check if user has the correct credentials
-    const user = await database.getSpecificUser(username, password);
-    if (user) {
-        // export const currentUser = user;
-        return res.status(200).redirect('/home');
-    } else {
-        return res.status(404).json("Not the right combination of username and password");
-    }
-}
-
-
 export async function createNewUser(req, res) {
     // format body into constants
     const {username, password, role} = req.body;
