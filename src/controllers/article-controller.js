@@ -81,27 +81,33 @@ export async function createNewArticle(req, res) {
     // title, article_text in list (with header and section), writer, category
     const {articleTitle, articleText, writer, category} = req.body;
 
-    // check if title already exist
-    const article = await database.getArticleOnTitle(articleTitle);
-    if (article) {
-        res.status(403).json(`Article with title "${articleTitle}" already exist`);
+    // check if writer exist as user in the database
+    const user = await database.getUserOnUsername(writer);
+    if (!user) {
+        res.status(403).json(`User with username "${writer}" does not exist`);
     } else {
-        // check if category already exist, if not create new one
-        const checkCat = await database.getSpecificCategory(category);
-        if (!checkCat) {
-            // create new category
-            try {
-                await database.createCategory(category);
-            } catch (err) {
-                return res.status(400).json('Error with creating new category', err);
-            }
+        // check if title already exist
+        const article = await database.getArticleOnTitle(articleTitle);
+        if (article) {
+            res.status(403).json(`Article with title "${articleTitle}" already exist`);
         } else {
-            // create new article
-            try {
-                await database.createArticle(articleTitle, articleText, category, writer);
-                return res.status(200).json('New article created');
-            } catch (e) {
-                res.status(400).json(`Error while creating new article: ${e}`);
+            // check if category already exist, if not create new one
+            const checkCat = await database.getSpecificCategory(category);
+            if (!checkCat) {
+                // create new category
+                try {
+                    await database.createCategory(category);
+                } catch (err) {
+                    return res.status(400).json('Error with creating new category', err);
+                }
+            } else {
+                // create new article
+                try {
+                    await database.createArticle(articleTitle, articleText, category, writer);
+                    return res.status(200).json('New article created');
+                } catch (e) {
+                    res.status(400).json(`Error while creating new article: ${e}`);
+                }
             }
         }
     }
