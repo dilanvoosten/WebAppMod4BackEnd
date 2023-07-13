@@ -2,7 +2,6 @@ import * as articleC from '../controllers/article-controller.js';
 import express from "express";
 
 const router = express.Router();
-import * as nhf from '../nextHandlerFunctions.js';
 
 // get call to retrieve all articles
 router.get('/articles', articleC.getAllArticles);
