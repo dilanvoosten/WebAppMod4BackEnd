@@ -25,8 +25,8 @@ export async function createCategory(req, res) {
     // format body into constant
     const category = req.body;
     // check if category exist
-    const checkCat = await database.getSpecificCategory(category);
-    if (checkCat) {
+    const checkCategory = await database.getSpecificCategory(category);
+    if (checkCategory) {
         return res.status(403).json(`This category already exist`);
     } else {
         // add category to database
@@ -66,7 +66,7 @@ export async function deleteCategory(req, res) {
             await database.deleteCategory(req.params.category);
             return res.status(204).json('Category successfully');
         } catch (err) {
-            return res.status(400).json(err);
+            return res.status(400).json('Error while deleting category', err);
         }
     }
 
