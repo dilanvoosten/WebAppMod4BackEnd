@@ -133,22 +133,6 @@ export function createArticle(title, articleText, category, username) {
     database.prepare(queries.addArticle).run(title, articleText, username, category);
 }
 
-export function updateTitle(newTitle, oldTitle) {
-    database.prepare(queries.updateTitle).run(newTitle, oldTitle);
-}
-
-export function updateArticleText(newArticleText, title) {
-    database.prepare(queries.updateArticleText).run(newArticleText, title);
-}
-
-export function updateArticleCategory(newCategory, title) {
-    database.prepare(queries.updateArticleCategory).run(newCategory, title);
-}
-
-export function updateArticle(newTitle, newArticleText, newCategory, oldTitle) {
-    database.prepare(queries.updateArticle).run(newTitle, newArticleText, newCategory, oldTitle);
-}
-
 export function deleteArticleOnTitle(title) {
     database.prepare(queries.deleteArticleOnTitle).run(title);
 

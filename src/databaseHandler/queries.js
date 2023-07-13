@@ -84,24 +84,6 @@ export const getArticlesOnCategory = `SELECT *
 export const addArticle = `INSERT INTO articles (title, article_text, writer, category)
                            VALUES (?, ?, ?, ?);`;
 
-export const updateTitle = `UPDATE articles
-                            SET title = ?
-                            WHERE title = ?;`;  // old title
-
-export const updateArticleText = `UPDATE articles
-                                  SET article_text = ?
-                                  WHERE title = ?;`;
-
-export const updateArticleCategory = `UPDATE articles
-                                      SET category = ?
-                                      WHERE title = ?;`;
-
-export const updateArticle = `UPDATE articles
-                              SET title        = ?,
-                                  article_text = ?,
-                                  category     = ?
-                              WHERE title = ?;`;    // old title
-
 export const deleteArticleOnTitle = `DELETE
                                      FROM articles
                                      WHERE title = ?;`;

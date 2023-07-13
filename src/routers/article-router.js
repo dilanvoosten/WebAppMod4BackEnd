@@ -21,9 +21,6 @@ router.get('/articles/categories/:category', articleC.getArticlesOnCategory);
 // post call to create new article/
 router.post('/articles', articleC.createNewArticle);
 
-// put call to update article
-router.put('/articles/:title', articleC.editArticle);
-
 // delete call to delete all articles from user
 router.delete('/users/:username/articles', articleC.deleteOnUsername);
 
