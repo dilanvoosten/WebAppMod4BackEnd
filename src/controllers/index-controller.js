@@ -15,6 +15,6 @@ export async function checkCredentials(req, res) {
         return res.status(404).json('Incorrect combination of username and password');
     } else {
         // TODO: return user in session
-        return res.status(200).redirect('/home');
+        return res.status(200).json(user);
     }
 }

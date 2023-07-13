@@ -3,7 +3,11 @@ import * as database from ".././databaseHandler/databaseConnector.js";
 export async function getAllCategories(req, res) {
     // call to get all categories function
     const categories = await database.getAllCategories();
-    return res.status(200).json(categories);
+    if (!categories) {
+        return res.status(404).json('No categories found in the system');
+    } else {
+        return res.status(200).json(categories);
+    }
 }
 
 export async function getSpecificCategory(req, res) {

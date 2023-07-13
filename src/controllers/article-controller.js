@@ -5,7 +5,11 @@ import * as database from ".././databaseHandler/databaseConnector.js";
 export async function getAllArticles(req, res) {
     // call to get all articles function
     const articles = await database.getAllArticles();
-    return res.status(200).json(articles);
+    if (!articles) {
+        return res.status(404).json('No articles found in the system');
+    } else {
+        return res.status(200).json(articles);
+    }
 }
 
 // get an article on title
@@ -80,7 +84,7 @@ export async function createNewArticle(req, res) {
     // check if title already exist
     const article = await database.getArticleOnTitle(articleTitle);
     if (article) {
-        res.status(403).json(`Article with title ${articleTitle} already exist`);
+        res.status(403).json(`Article with title "${articleTitle}" already exist`);
     } else {
         // check if category already exist, if not create new one
         const checkCat = await database.getSpecificCategory(category);

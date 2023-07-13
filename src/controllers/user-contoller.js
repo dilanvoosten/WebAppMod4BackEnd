@@ -3,7 +3,11 @@ import * as  database from ".././databaseHandler/databaseConnector.js";
 export async function getAllUsers(req, res) {
     // call the get all users function
     const users = await database.getAllUsers();
-    return res.status(200).json(users);
+    if (!users) {
+        return res.status(404).json('No users found in the system');
+    } else {
+        return res.status(200).json(users);
+    }
 }
 
 export async function getUserOnUsername(req, res) {
@@ -48,11 +52,11 @@ export async function updateUserCredentials(req, res) {
     } else {
         // check which credentials to change and do accordingly
         try {
-            if (username === undefined) {
+            if (username === "") {
                 // change password only
                 await database.updatePassword(password, req.params.username);
                 return res.status(200).json('Password changed!');
-            } else if (password === undefined) {
+            } else if (password === "") {
                 // change username only
                 await database.updateUsername(username, req.params.username);
                 return res.status(200).json('Username changed!');
